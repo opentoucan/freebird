@@ -4,6 +4,14 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
+    paths:
+      - "src/**"
+      - "*.toml"
+      - "*.sh"
+      - "*.lock"
+      - "Dockerfile"
+      - "!target/**"
+      - "!.github/**"
 
 env:
   REGISTRY: ghcr.io
