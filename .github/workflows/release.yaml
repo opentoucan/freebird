@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    environment:
+      name: 'production'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.6'
+
+      - name: Prep
+        id: prep
+        run: |
+          echo "SEMVER=$(echo '${{ github.ref_name }}' | grep -o -P '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?')" >> $GITHUB_OUTPUT
+
+      - uses: imjasonh/setup-crane@v0.3
+      - run: |
+          crane tag "ghcr.io/${{ github.repository_owner }}/freebird:sha-${{ github.sha }}" "${{ steps.prep.outputs.SEMVER }}"
