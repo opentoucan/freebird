@@ -13,6 +13,9 @@ on:
     tags:
       - 'v*'
 
+env:
+  SHA: ${{ inputs.commit-sha || github.sha }}
+
 jobs:
   release-images:
     runs-on: ubuntu-latest
@@ -36,4 +39,4 @@ jobs:
 
       - uses: imjasonh/setup-crane@v0.3
       - run: |
-          crane tag "ghcr.io/${{ github.repository_owner }}/freebird:sha-${{ github.sha }}" "${{ steps.prep.outputs.SEMVER }}"
+          crane tag "ghcr.io/${{ github.repository_owner }}/freebird:sha-${{ env.SHA }}" "${{ inputs.release-tag || steps.prep.outputs.SEMVER }}"
