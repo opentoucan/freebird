@@ -41,6 +41,7 @@ use songbird::{
     TrackEvent,
 };
 
+const VERSION: Option<&str> = option_env!("CARGO_PKG_VERSION");
 struct HttpKey;
 
 impl TypeMapKey for HttpKey {
@@ -108,7 +109,7 @@ impl EventHandler for Handler {
 
 #[group]
 #[commands(
-    join, leave, play, skip, stop, ping, search
+    join, leave, play, skip, stop, ping, search, version
 )]
 struct General;
 
@@ -511,6 +512,15 @@ async fn search(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                     .await,
             );
         }
+
+    Ok(())
+}
+
+#[command]
+#[only_in(guilds)]
+async fn version(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+
+    check_msg(msg.reply(ctx, VERSION.unwrap_or("unknown")).await);
 
     Ok(())
 }
