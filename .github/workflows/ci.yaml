@@ -6,7 +6,7 @@ on:
     branches: [ "main" ]
     paths:
       - "src/**"
-      - "*.toml"
+      - "!Cargo.toml"
       - "*.sh"
       - "*.lock"
       - "Dockerfile"

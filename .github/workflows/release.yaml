@@ -35,8 +35,13 @@ jobs:
       - name: Prep
         id: prep
         run: |
-          echo "SEMVER=$(echo '${{ github.ref_name }}' | grep -o -P '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?')" >> $GITHUB_OUTPUT
+          INPUT_VERSION=${{ github.event.inputs.release-tag }}
+          TAG_VERSION=$(echo $('${{ github.ref_name }}' | grep -o -P '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?'))
+          export SEMVER=$(echo "${INPUT_VERSION:-${TAG_VERSION}})" >> $GITHUB_OUTPUT
 
+      - name: Bump Cargo package version
+        run: |
+          dasel put -r toml -f Cargo.toml -t string -v "${{ steps.prep.outputs.SEMVER }}" 'package.version'
       - uses: imjasonh/setup-crane@v0.3
       - run: |
-          crane tag "ghcr.io/${{ github.repository_owner }}/freebird:sha-${{ env.SHA }}" "${{ github.event.inputs.release-tag || steps.prep.outputs.SEMVER }}"
+          crane tag "ghcr.io/${{ github.repository_owner }}/freebird:sha-${{ env.SHA }}" "${{ steps.prep.outputs.SEMVER }}"
