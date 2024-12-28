@@ -36,7 +36,7 @@ jobs:
         id: prep
         run: |
           INPUT_VERSION=${{ github.event.inputs.release-tag }}
-          TAG_VERSION=$(echo $('${{ github.ref_name }}' | grep -o -P '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?'))
+          TAG_VERSION=$(echo '${{ github.ref_name }}' | grep -o -P '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?')
           export SEMVER=$(echo "${INPUT_VERSION:-${TAG_VERSION}})" >> $GITHUB_OUTPUT
 
       - name: Bump Cargo package version
