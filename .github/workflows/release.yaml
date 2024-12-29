@@ -32,6 +32,13 @@ jobs:
         with:
           go-version: '1.21.6'
 
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+        with:
+          mise_toml: |
+            [tools]
+            "aqua:TomWright/dasel" = "latest"
+
       - name: Prep
         id: prep
         run: |
