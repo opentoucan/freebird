@@ -49,6 +49,12 @@ jobs:
       - name: Bump Cargo package version
         run: |
           dasel put -r toml -f Cargo.toml -t string -v "${{ steps.prep.outputs.SEMVER }}" 'package.version'
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "chore(cargo.toml): bump version to "${{ steps.prep.outputs.SEMVER }}"
+          git push
+
       - uses: imjasonh/setup-crane@v0.3
       - run: |
           crane tag "ghcr.io/${{ github.repository_owner }}/freebird:sha-${{ env.SHA }}" "${{ steps.prep.outputs.SEMVER }}"
