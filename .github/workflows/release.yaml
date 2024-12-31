@@ -15,7 +15,6 @@ env:
 jobs:
   release-please:
     runs-on: ubuntu-latest
-    needs: [commitlint, tests, formatting]
     if: github.repository == 'opentoucan/freebird'
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
