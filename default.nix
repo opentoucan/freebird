@@ -23,12 +23,19 @@ in pkgs.mkShell {
 
     #Misc packages for local dev
     pkgs.dasel
+    pkgs.nodejs_23
   ];
 
   # See https://discourse.nixos.org/t/rust-src-not-found-and-other-misadventures-of-developing-rust-on-nixos/11570/3?u=samuela.
   RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
-
+  LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
   shellHook = ''
     export DISCORD_TOKEN=""
+    npm install @commitlint/cli @commitlint/config-conventional --save-dev
+    npm install husky --save-dev
+    npx husky init
+    echo "npx --no -- commitlint --edit \$1" > .husky/commit-msg
+    npm install --save-dev lint-staged
+    echo "" > .husky/pre-commit
   '';
 }
