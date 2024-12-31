@@ -6,10 +6,6 @@ on:
     branches: [ "main" ]
     paths:
       - "src/**"
-      - "!Cargo.toml"
-      - "*.sh"
-      - "*.lock"
-      - "Dockerfile"
       - "!target/**"
       - "!.github/**"
 
@@ -17,61 +13,75 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install required dependencies
+        run: |
+          apt update
+          apt install -y sudo
+          sudo apt install -y git curl
+          curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs
+      - name: Print versions
+        run: |
+          git --version
+          node --version
+          npm --version
+          npx commitlint --version
+      - name: Install commitlint
+        run: |
+          npm install conventional-changelog-conventionalcommits
+          npm install commitlint@latest
+
+      - name: Validate current commit (last commit) with commitlint
+        if: github.event_name == 'push'
+        run: npx commitlint --last --verbose
+
+      - name: Validate PR commits with commitlint
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
   tests:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-      id-token: write
-      pull-requests: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT }}
-
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo test --all-features
-
-  build:
+      - run: |
+          cargo check
+          cargo test --all-features
+          cargo build --release
+  formatting:
+    name: cargo fmt
     runs-on: ubuntu-latest
-    needs: [tests]
+    steps:
+      - uses: actions/checkout@v4
+      # Ensure rustfmt is installed and setup problem matcher
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+      - name: Rustfmt Check
+        uses: actions-rust-lang/rustfmt@v1
+
+
+  release-pr:
+    runs-on: ubuntu-latest
+    needs: [commitlint, tests, formatting]
     permissions:
       contents: write
       packages: write
       id-token: write
       pull-requests: write
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PAT }}
-
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/freebird
-          tags: |
-            type=sha,format=long
-            type=raw,value=latest
-
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+    - uses: googleapis/release-please-action@v4
+      with:
+        token: ${{ secrets.PAT }}
+        release-type:
+        # optional. customize path to release-please-config.json
+        config-file: release-please-config.json
+        # optional. customize path to .release-please-manifest.json
+        manifest-file: .release-please-manifest.json
