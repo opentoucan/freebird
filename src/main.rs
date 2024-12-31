@@ -21,23 +21,30 @@ use std::{
 use reqwest::Client as HttpClient;
 
 use serenity::{
-    async_trait, client::{Client, Context, EventHandler}, framework::{
+    async_trait,
+    client::{Client, Context, EventHandler},
+    framework::{
         standard::{
             macros::{command, group},
-            Args,
-            CommandResult,
-            Configuration,
+            Args, CommandResult, Configuration,
         },
         StandardFramework,
-    }, futures::TryFutureExt, http::Http, model::{channel::{self, ChannelType, Message}, gateway::Ready, guild, id, prelude::ChannelId, voice::VoiceState}, prelude::{GatewayIntents, Mentionable, TypeMapKey}, Result as SerenityResult
+    },
+    futures::TryFutureExt,
+    http::Http,
+    model::{
+        channel::{self, ChannelType, Message},
+        gateway::Ready,
+        guild, id,
+        prelude::ChannelId,
+        voice::VoiceState,
+    },
+    prelude::{GatewayIntents, Mentionable, TypeMapKey},
+    Result as SerenityResult,
 };
 
 use songbird::{
-    input::YoutubeDl,
-    Event,
-    EventContext,
-    EventHandler as VoiceEventHandler,
-    SerenityInit,
+    input::YoutubeDl, Event, EventContext, EventHandler as VoiceEventHandler, SerenityInit,
     TrackEvent,
 };
 
@@ -55,7 +62,7 @@ impl EventHandler for Handler {
     async fn ready(&self, _: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
     }
-    async fn voice_state_update(&self, ctx: Context, old: Option<VoiceState>, new: VoiceState){
+    async fn voice_state_update(&self, ctx: Context, old: Option<VoiceState>, new: VoiceState) {
         {
             let voice_state = match old {
                 Some(old) => old,
@@ -66,7 +73,7 @@ impl EventHandler for Handler {
             let channel_id = voice_state.channel_id;
             let channel_id = match channel_id {
                 Some(channel_id) => channel_id,
-                None =>{
+                None => {
                     return;
                 }
             };
@@ -77,40 +84,34 @@ impl EventHandler for Handler {
                 None => {
                     return;
                 }
-
             };
 
             let user_count = guild
-            .voice_states
-            .values()
-            .filter(|state| {
-                match state.channel_id {
+                .voice_states
+                .values()
+                .filter(|state| match state.channel_id {
                     Some(c) => c == channel_id,
                     None => false,
-                }
-            })
-            .count();
+                })
+                .count();
 
-            if(user_count > 1){
+            if (user_count > 1) {
                 return;
-        }
+            }
         }
 
-       let manager = songbird::get(&ctx)
-        .await
-        .expect("Songbird Voice client placed in at initialisation.")
-        .clone();
+        let manager = songbird::get(&ctx)
+            .await
+            .expect("Songbird Voice client placed in at initialisation.")
+            .clone();
         let has_handler = manager.get(new.guild_id.unwrap()).is_some();
 
         manager.remove(new.guild_id.unwrap()).await;
-
     }
 }
 
 #[group]
-#[commands(
-    join, leave, play, skip, stop, ping, search, version
-)]
+#[commands(join, leave, play, skip, stop, ping, search, version)]
 struct General;
 
 #[tokio::main]
@@ -156,7 +157,6 @@ async fn get_http_client(ctx: &Context) -> HttpClient {
         .expect("Guaranteed to exist in the typemap.")
 }
 
-
 #[command]
 #[only_in(guilds)]
 async fn join(ctx: &Context, msg: &Message) -> CommandResult {
@@ -176,7 +176,7 @@ async fn join(ctx: &Context, msg: &Message) -> CommandResult {
             check_msg(msg.reply(ctx, "Not in a voice channel").await);
 
             return Ok(());
-        },
+        }
     };
 
     let manager = songbird::get(ctx)
@@ -204,7 +204,6 @@ async fn join(ctx: &Context, msg: &Message) -> CommandResult {
                 http: send_http,
             },
         );
-
     } else {
         check_msg(
             msg.channel_id
@@ -252,7 +251,7 @@ async fn join_channel(ctx: &Context, msg: &Message) {
         None => {
             check_msg(msg.reply(ctx, "Not in a voice channel").await);
             return;
-        },
+        }
     };
 
     let manager = songbird::get(ctx)
@@ -280,7 +279,6 @@ async fn join_channel(ctx: &Context, msg: &Message) {
                 http: send_http,
             },
         );
-
     } else {
         check_msg(
             msg.channel_id
@@ -289,7 +287,6 @@ async fn join_channel(ctx: &Context, msg: &Message) {
         );
     }
 }
-
 
 #[command]
 #[only_in(guilds)]
@@ -329,7 +326,6 @@ async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 async fn play(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-
     join_channel(ctx, msg).await;
     let url = match args.single::<String>() {
         Ok(url) => url,
@@ -341,7 +337,7 @@ async fn play(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             );
 
             return Ok(());
-        },
+        }
     };
 
     if !url.starts_with("http") {
@@ -471,7 +467,7 @@ async fn search(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             );
 
             return Ok(());
-        },
+        }
     };
 
     let guild_id = msg.guild_id.unwrap();
@@ -488,30 +484,30 @@ async fn search(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
         .expect("Songbird Voice client placed in at initialisation.")
         .clone();
 
-        if let Some(handler_lock) = manager.get(guild_id) {
-            let mut handler = handler_lock.lock().await;
+    if let Some(handler_lock) = manager.get(guild_id) {
+        let mut handler = handler_lock.lock().await;
 
-            // Here, we use lazy restartable sources to make sure that we don't pay
-            // for decoding, playback on tracks which aren't actually live yet.
-            let src = YoutubeDl::new_search(http_client, url);
+        // Here, we use lazy restartable sources to make sure that we don't pay
+        // for decoding, playback on tracks which aren't actually live yet.
+        let src = YoutubeDl::new_search(http_client, url);
 
-            handler.enqueue_input(src.into()).await;
+        handler.enqueue_input(src.into()).await;
 
-            check_msg(
-                msg.channel_id
-                    .say(
-                        &ctx.http,
-                        format!("Added song to queue: position {}", handler.queue().len()),
-                    )
-                    .await,
-            );
-        } else {
-            check_msg(
-                msg.channel_id
-                    .say(&ctx.http, "Not in a voice channel to play in")
-                    .await,
-            );
-        }
+        check_msg(
+            msg.channel_id
+                .say(
+                    &ctx.http,
+                    format!("Added song to queue: position {}", handler.queue().len()),
+                )
+                .await,
+        );
+    } else {
+        check_msg(
+            msg.channel_id
+                .say(&ctx.http, "Not in a voice channel to play in")
+                .await,
+        );
+    }
 
     Ok(())
 }
@@ -519,7 +515,6 @@ async fn search(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 async fn version(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-
     check_msg(msg.reply(ctx, VERSION.unwrap_or("unknown")).await);
 
     Ok(())
