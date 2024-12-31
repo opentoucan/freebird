@@ -655,7 +655,9 @@ dependencies = [
 
 [[package]]
 name = "freebird"
-version = "0.3.0"
+// x-release-please-start-version
+version = "0.3.1"
+// x-release-please-end
 dependencies = [
  "openssl",
  "reqwest",
