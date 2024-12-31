@@ -24,6 +24,7 @@ jobs:
       packages: write
       id-token: write
       pull-requests: write
+      workflows: write
     steps:
     - uses: googleapis/release-please-action@v4
       with:
