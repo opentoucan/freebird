@@ -6,8 +6,8 @@ on:
     branches: [ "main" ]
     paths:
       - "src/**"
-      - "!target/**"
-      - "!.github/**"
+      - "Dockerfile"
+      - "entrypoint.sh"
 
 env:
   REGISTRY: ghcr.io
@@ -21,9 +21,9 @@ jobs:
         run: |
           apt update
           apt install -y sudo
-          sudo apt install -y git curl
+          apt install -y git curl
           curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-          sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs
+          DEBIAN_FRONTEND=noninteractive apt install -y nodejs
       - name: Print versions
         run: |
           git --version
