@@ -6,6 +6,8 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**.md'
+      - '.release-please-manifest.json'
+      - 'Cargo.*'
 
 env:
   REGISTRY: ghcr.io
