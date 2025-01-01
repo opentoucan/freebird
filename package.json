@@ -10,7 +10,6 @@
     "husky": "^9.1.7"
   },
   "scripts": {
-    "prepare": "husky",
-    "commitlint": "commitlint --edit"
+    "prepare": "husky"
   }
 }
