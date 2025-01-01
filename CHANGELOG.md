@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/opentoucan/freebird/compare/v0.3.1...v0.3.2) (2025-01-01)
+
+
+### Bug Fixes
+
+* we've fixed some theoretical bug ([b2341f7](https://github.com/opentoucan/freebird/commit/b2341f7aeb15202384722fcf39274f2e114a381e))
+
 ## [0.3.1](https://github.com/opentoucan/freebird/compare/v0.3.0...v0.3.1) (2025-01-01)
 
 
