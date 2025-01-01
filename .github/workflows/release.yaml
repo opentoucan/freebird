@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-
+  BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -23,12 +23,20 @@ jobs:
       tag_name: ${{ steps.release.outputs.tag_name }}
       major: ${{ steps.release.outputs.major }}
       minor: ${{ steps.release.outputs.minor }}
+      patch: ${{ steps.release.outputs.patch }}
     steps:
+    - name: set config file from branch
+      run: |
+        if [[ ${{ env.BRANCH_NAME }} == main ]]; then
+          echo "CONFIG_FILE=release-please-config.json" >> $GITHUB_ENV
+        else
+          echo "CONFIG_FILE=release-please-config-hotfix.json" >> $GITHUB_ENV
+        fi
     - uses: googleapis/release-please-action@v4
       id: release
       with:
         token: ${{ secrets.PAT }}
-        config-file: release-please-config.json
+        config-file: ${{ env.CONFIG_FILE }}
         manifest-file: .release-please-manifest.json
 
   docker-build:
@@ -70,3 +78,10 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      # If it's a major or minor version change then cut a branch from the new tag
+      - name: Branch from tag
+        if: ${{ needs.release-please.outputs.patch }} != 0
+        run: |
+          git checkout -b release-v${{ needs.release-please.outputs.major }}.${{ needs.release-please.outputs.minor }} ${{ needs.release-please.outputs.tag_name }}
+          git push -u origin ${{ needs.release-please.outputs.tag_name }}
