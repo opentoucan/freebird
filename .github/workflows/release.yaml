@@ -83,5 +83,6 @@ jobs:
       - name: Branch from tag
         if: ${{ needs.release-please.outputs.patch }} != 0
         run: |
+          git fetch --all
           git checkout -b release-v${{ needs.release-please.outputs.major }}.${{ needs.release-please.outputs.minor }} ${{ needs.release-please.outputs.tag_name }}
           git push -u origin ${{ needs.release-please.outputs.tag_name }}
