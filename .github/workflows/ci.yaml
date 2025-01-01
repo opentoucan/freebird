@@ -5,10 +5,9 @@ on:
   pull_request:
     branches: ["main", "release-*"]
   push:
-    paths:
-      - '!target/**'
-      - '!CHANGELOG.md'
-      - '!README.md'
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
 
 env:
   REGISTRY: ghcr.io
