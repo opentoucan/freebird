@@ -107,7 +107,6 @@ struct General;
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    // Configure the client with your Discord bot token in the environment.
     let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
 
     let framework = StandardFramework::new().group(&GENERAL_GROUP);
@@ -162,7 +161,7 @@ async fn join(ctx: &Context, msg: &Message) -> CommandResult {
     let connect_to = match channel_id {
         Some(channel) => channel,
         None => {
-            check_msg(msg.reply(ctx, "Not in a voice channel").await);
+            check_msg(msg.reply(ctx, "Not in a voice channel.").await);
 
             return Ok(());
         }
