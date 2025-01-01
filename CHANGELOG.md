@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/opentoucan/freebird/compare/v0.3.2...v0.4.0) (2025-01-01)
+
+
+### Miscellaneous Chores
+
+* release 0.4.0 ([a6b4d73](https://github.com/opentoucan/freebird/commit/a6b4d73cffae63f03a830923b0017d3d790627f3))
+
 ## [0.3.2](https://github.com/opentoucan/freebird/compare/v0.3.1...v0.3.2) (2025-01-01)
 
 
