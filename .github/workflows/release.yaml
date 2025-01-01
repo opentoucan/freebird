@@ -67,7 +67,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/freebird
           tags: |
-            type=semver,pattern=${{ needs.release-please.outputs.tag_name }}
+            type=semver,pattern=${{ needs.release-please.outputs.major }}.${{ needs.release-please.outputs.minor }}.${{ needs.release-please.outputs.patch }}
             type=raw,value=latest
 
       - name: Build and push Docker image
