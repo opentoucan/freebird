@@ -1,0 +1,28 @@
+name: release-please
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main", "release-*"]
+    paths:
+      - '!target/**'
+      - '!CHANGELOG.md'
+      - '!README.md'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    if: github.repository == 'opentoucan/freebird'
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+    - uses: googleapis/release-please-action@v4
+      id: release
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        config-file: release-please-config.json
+        manifest-file: .release-please-manifest.json
