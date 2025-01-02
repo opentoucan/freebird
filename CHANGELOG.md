@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/opentoucan/freebird/compare/v0.5.0...v0.5.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* fixed error message when using trackinfo command ([76aaa9d](https://github.com/opentoucan/freebird/commit/76aaa9dffcc1272a715f45b2d0d7a56e263ae861))
+
 ## [0.5.0](https://github.com/opentoucan/freebird/compare/v0.4.0...v0.5.0) (2025-01-02)
 
 
