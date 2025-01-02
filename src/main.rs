@@ -550,7 +550,14 @@ async fn trackinfo(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
                 .await,
         );
     } else {
-        check_msg(msg.channel_id.say(&ctx.http, "You can't use this command if I'm not in a voice channel").await);
+        check_msg(
+            msg.channel_id
+                .say(
+                    &ctx.http,
+                    "You can't use this command if I'm not in a voice channel",
+                )
+                .await,
+        );
     }
 
     Ok(())
