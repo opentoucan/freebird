@@ -100,7 +100,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(join, leave, play, skip, stop, ping, search, version)]
+#[commands(join, leave, play, skip, stop, ping, search, version, trackinfo)]
 struct General;
 
 #[tokio::main]
@@ -504,6 +504,48 @@ async fn search(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 #[only_in(guilds)]
 async fn version(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     check_msg(msg.reply(ctx, VERSION.unwrap_or("unknown")).await);
+
+    Ok(())
+}
+
+
+#[command]
+#[only_in(guilds)]
+async fn trackinfo(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
+    let guild_id = msg.guild_id.unwrap();
+
+    let manager = songbird::get(ctx)
+        .await
+        .expect("Songbird Voice client placed in at initialisation.")
+        .clone();
+
+    if let Some(handler_lock) = manager.get(guild_id) {
+        let handler = handler_lock.lock().await;
+        let queue = handler.queue();
+        let track_queue_current_option = queue.current();
+        let current_track = match track_queue_current_option {
+            Some(current_track) => current_track,
+            None =>{
+                check_msg(msg.channel_id.say(&ctx.http, "No track currently playing.").await);
+                return Ok(())
+            }
+        };
+        let track_state_result = current_track.get_info().await;
+        let track_state = match track_state_result.ok() {
+            Some(track_state) => track_state,
+            None => {
+                return Ok(());
+            }
+        };
+
+        check_msg(msg.channel_id.say(&ctx.http, format!("Total playtime {}s.", track_state.play_time.as_secs())).await);
+    } else {
+        check_msg(
+            msg.channel_id
+                .say(&ctx.http, "Something went wrong")
+                .await,
+        );
+    }
 
     Ok(())
 }
