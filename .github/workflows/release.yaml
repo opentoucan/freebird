@@ -68,7 +68,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/freebird
           tags: |
-            type=semver,pattern=${{ needs.release-please.outputs.major }}.${{ needs.release-please.outputs.minor }}.${{ needs.release-please.outputs.patch }}
+            type=semver,pattern=${{ needs.release-please.outputs.tag_name }}
             type=raw,value=latest
 
       - name: Build and push Docker image
@@ -85,5 +85,5 @@ jobs:
       - name: Branch from tag
         if: ${{ needs.release-please.outputs.patch }} == 0
         run: |
-          git checkout -b release-v${{ needs.release-please.outputs.major }}.${{ needs.release-please.outputs.minor }} ${{ needs.release-please.outputs.tag_name }}
+          git checkout -b release-${{ needs.release-please.outputs.tag_name }} ${{ needs.release-please.outputs.tag_name }}
           git push -u origin ${{ needs.release-please.outputs.tag_name }}
