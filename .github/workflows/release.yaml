@@ -3,7 +3,7 @@ name: release
 on:
   workflow_dispatch:
   push:
-    branches: ["main", "release-*"]
+    branches: ["main", "release-v*"]
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -27,7 +27,7 @@ jobs:
     steps:
     - name: set config file from branch
       run: |
-        if [[ ${{ env.BRANCH_NAME }} == main ]]; then
+        if [[ ${{ env.BRANCH_NAME }} == *main* ]]; then
           echo "CONFIG_FILE=release-please-config.json" >> $GITHUB_ENV
         else
           echo "CONFIG_FILE=release-please-config-hotfix.json" >> $GITHUB_ENV
