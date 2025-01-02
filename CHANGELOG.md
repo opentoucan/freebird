@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/opentoucan/freebird/compare/v0.4.0...v0.4.1) (2025-01-02)
+
+
+### Features
+
+* track info command ([6e8af94](https://github.com/opentoucan/freebird/commit/6e8af94858e452b37f21421dc08c04659df37df6))
+
 ## [0.4.0](https://github.com/opentoucan/freebird/compare/v0.3.0...v0.4.0) (2025-01-01)
 
 
