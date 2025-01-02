@@ -27,7 +27,7 @@ jobs:
     steps:
     - name: set config file from branch
       run: |
-        if [[ ${{ env.BRANCH_NAME }} == *main* ]]; then
+        if [[ ${{ env.BRANCH_NAME }} == main ]]; then
           echo "CONFIG_FILE=release-please-config.json" >> $GITHUB_ENV
         else
           echo "CONFIG_FILE=release-please-config-hotfix.json" >> $GITHUB_ENV
@@ -85,4 +85,4 @@ jobs:
         if: ${{ needs.release-please.outputs.patch }} != 0
         run: |
           git checkout -b release-v${{ needs.release-please.outputs.major }}.${{ needs.release-please.outputs.minor }} ${{ needs.release-please.outputs.tag_name }}
-          git push -u origin ${{ needs.release-please.outputs.tag_name }}
+          git push -u origin
