@@ -508,7 +508,6 @@ async fn version(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
     Ok(())
 }
 
-
 #[command]
 #[only_in(guilds)]
 async fn trackinfo(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
@@ -525,9 +524,13 @@ async fn trackinfo(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
         let track_queue_current_option = queue.current();
         let current_track = match track_queue_current_option {
             Some(current_track) => current_track,
-            None =>{
-                check_msg(msg.channel_id.say(&ctx.http, "No track currently playing.").await);
-                return Ok(())
+            None => {
+                check_msg(
+                    msg.channel_id
+                        .say(&ctx.http, "No track currently playing.")
+                        .await,
+                );
+                return Ok(());
             }
         };
         let track_state_result = current_track.get_info().await;
@@ -538,13 +541,16 @@ async fn trackinfo(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
             }
         };
 
-        check_msg(msg.channel_id.say(&ctx.http, format!("Total playtime {}s.", track_state.play_time.as_secs())).await);
-    } else {
         check_msg(
             msg.channel_id
-                .say(&ctx.http, "Something went wrong")
+                .say(
+                    &ctx.http,
+                    format!("Total playtime {}s.", track_state.play_time.as_secs()),
+                )
                 .await,
         );
+    } else {
+        check_msg(msg.channel_id.say(&ctx.http, "Something went wrong").await);
     }
 
     Ok(())
