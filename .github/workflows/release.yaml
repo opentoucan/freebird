@@ -46,6 +46,7 @@ jobs:
         echo "major: ${{ steps.release.outputs.major }}"
         echo "minor: ${{ steps.release.outputs.minor }}"
         echo "patch: ${{ steps.release.outputs.patch }}"
+        echo "outputs: ${{ steps.release.outputs }}"
 
   docker-build:
     runs-on: ubuntu-latest
