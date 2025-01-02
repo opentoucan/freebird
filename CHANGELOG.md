@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.6.0](https://github.com/opentoucan/freebird/compare/v0.5.0...v0.6.0) (2025-01-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* simulate a breaking change
+
+### Features
+
+* simulate a breaking change ([261ef06](https://github.com/opentoucan/freebird/commit/261ef060955bcf7c80dc8bcbf551cf0c6385e5ab))
+
+
+### Bug Fixes
+
+* more verbose error response when incorrectly using trackinfo command ([0a3dbfc](https://github.com/opentoucan/freebird/commit/0a3dbfc3c5772b966dd271e4cb86f758fc461fee))
+
 ## [0.5.0](https://github.com/opentoucan/freebird/compare/v0.4.0...v0.5.0) (2025-01-02)
 
 
