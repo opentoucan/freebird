@@ -41,11 +41,11 @@ jobs:
         target-branch: ${{ github.ref_name }}
     - name: output version
       run: |
-        echo "release_created: ${{ steps.release.outputs.release_created }}" >> $GITHUB_ENV
-        echo "tag_name: ${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
-        echo "major: ${{ steps.release.outputs.major }}" >> $GITHUB_ENV
-        echo "minor: ${{ steps.release.outputs.minor }}" >> $GITHUB_ENV
-        echo "patch: ${{ steps.release.outputs.patch }}" >> $GITHUB_ENV
+        echo "release_created: ${{ steps.release.outputs.release_created }}"
+        echo "tag_name: ${{ steps.release.outputs.tag_name }}"
+        echo "major: ${{ steps.release.outputs.major }}"
+        echo "minor: ${{ steps.release.outputs.minor }}"
+        echo "patch: ${{ steps.release.outputs.patch }}"
 
   docker-build:
     runs-on: ubuntu-latest
