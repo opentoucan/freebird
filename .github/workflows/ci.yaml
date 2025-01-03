@@ -2,8 +2,8 @@ name: ci
 
 on:
   workflow_dispatch:
-  branches: ["main", "+([0-9])?(.{+([0-9]),x}).x"]
   push:
+    branches: ["main", "+([0-9])?(.{+([0-9]),x}).x"]
     paths-ignore:
       - 'docs/**'
       - '**.md'
