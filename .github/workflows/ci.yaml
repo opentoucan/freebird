@@ -87,7 +87,6 @@ jobs:
           persist-credentials: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: 000000000000000 # Not needed
 
   docker-build:
     runs-on: ubuntu-latest
