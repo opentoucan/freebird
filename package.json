@@ -1,4 +1,8 @@
 {
+  "name": "freebird",
+  "version": "0.1.0",
+  "private": "true",
+  "token": "",
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
