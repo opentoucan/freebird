@@ -92,6 +92,7 @@ jobs:
           semantic_version: 24.2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   docker-build:
     runs-on: ubuntu-latest
