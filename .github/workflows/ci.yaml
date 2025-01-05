@@ -122,7 +122,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/freebird
           tags: |
             type=semver,pattern=${{ needs.release.outputs.new_release_version }}
-            type=raw,value=latest
 
       - name: Build and push Docker image
         id: build-and-push
@@ -138,5 +137,6 @@ jobs:
       - name: Branch from tag
         if: ${{ needs.release.outputs.patch }} == 0
         run: |
+          git config --global push.autoSetupRemote true
           git checkout -b ${{ needs.release.outputs.major }}.${{ needs.release.outputs.minor }}.x ${{ needs.release.outputs.git_tag }}
-          git push -u origin
+          git push
