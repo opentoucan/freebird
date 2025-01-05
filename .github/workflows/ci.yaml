@@ -107,13 +107,11 @@ jobs:
         uses: cycjimmy/semantic-release-action@v4
         id: semantic-release
         with:
-          persist-credentials: false
           extra_plugins: |
             @semantic-release/commit-analyzer@13.0.1
             @semantic-release/release-notes-generator@14.0.3
             @semantic-release/github@11.0.1
             @semantic-release/git@10.0.1
-            semantic-release-cargo@2.3.11
           semantic_version: 24.2.1
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
