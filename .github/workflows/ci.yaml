@@ -51,7 +51,6 @@ jobs:
           token: ${{ secrets.PAT }}
       - uses: dtolnay/rust-toolchain@stable
       - run: |
-          cargo check
           cargo test --all-features
 
   formatting:
@@ -65,9 +64,14 @@ jobs:
       - name: Rustfmt Check
         uses: actions-rust-lang/rustfmt@v1
 
+  get-next-version:
+    uses: semantic-release-action/next-release-version/.github/workflows/next-release-version.yml@v4
+
   release:
     runs-on: ubuntu-latest
     if: github.repository == 'opentoucan/freebird'
+    needs:
+      - get-next-version
     permissions:
       contents: write
     outputs:
@@ -80,6 +84,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.6'
+
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+        with:
+          mise_toml: |
+            [tools]
+            "aqua:TomWright/dasel" = "latest"
+
+      - uses: dtolnay/rust-toolchain@stable
+      - run: |
+          cargo check
+
+      - name: Bump Cargo package version
+        run: |
+          dasel put -r toml -f Cargo.toml -t string -v "${{ needs.get-next-version.outputs.new-release-version }}" 'package.version'
+
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v4
         id: semantic-release
