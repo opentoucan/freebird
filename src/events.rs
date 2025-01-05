@@ -1,10 +1,7 @@
 use serenity::{
     async_trait,
-    client::{ Context, EventHandler },
-    model::{
-        gateway::Ready,
-        voice::VoiceState,
-    }
+    client::{Context, EventHandler},
+    model::{gateway::Ready, voice::VoiceState},
 };
 use songbird::{Event, EventContext, EventHandler as VoiceEventHandler};
 

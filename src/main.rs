@@ -1,11 +1,8 @@
-use std:: {
-    env,
-    sync::Arc
-};
+use std::{env, sync::Arc};
 
 use reqwest::Client as HttpClient;
 
-use serenity::{all::{GuildId}, prelude::GatewayIntents};
+use serenity::{all::GuildId, prelude::GatewayIntents};
 use songbird::SerenityInit;
 
 mod config;
@@ -15,10 +12,8 @@ mod commands;
 
 mod events;
 
-
 mod typekeys;
 use typekeys::HttpKey;
-
 
 #[derive(Debug, Clone)]
 struct Data {
@@ -70,7 +65,7 @@ async fn main() {
             commands::play(),
             commands::queue(),
             commands::skip(),
-            commands::version()
+            commands::version(),
         ],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("=".to_owned()),
@@ -88,7 +83,12 @@ async fn main() {
 
                 if cfg!(debug_assertions) {
                     println!("Running with debug enabled");
-                    poise::builtins::register_in_guild(ctx, &framework.options().commands, GuildId::new(config_clone.test_guild.parse::<u64>().unwrap())).await?;
+                    poise::builtins::register_in_guild(
+                        ctx,
+                        &framework.options().commands,
+                        GuildId::new(config_clone.test_guild.parse::<u64>().unwrap()),
+                    )
+                    .await?;
                 } else {
                     println!("Running in production");
                     poise::builtins::register_globally(ctx, &framework.options().commands).await?;

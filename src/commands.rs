@@ -6,7 +6,7 @@ use tracing::instrument;
 use crate::{
     events::TrackErrorNotifier,
     get_songbird_manager,
-    typekeys::{HttpKey, SongTitleKey, SongUrlKey, SongLengthKey},
+    typekeys::{HttpKey, SongLengthKey, SongTitleKey, SongUrlKey},
     Context, Error,
 };
 
@@ -79,8 +79,11 @@ pub async fn play(
         let mut typemap = handle.typemap().write().await;
         typemap.insert::<SongTitleKey>(title.clone());
         typemap.insert::<SongUrlKey>(url);
-        typemap.insert::<SongLengthKey>(format!("{:0>2}:{:0>2}", (track_length.as_secs() / 60) % 60, track_length.as_secs() % 60));
-
+        typemap.insert::<SongLengthKey>(format!(
+            "{:0>2}:{:0>2}",
+            (track_length.as_secs() / 60) % 60,
+            track_length.as_secs() % 60
+        ));
     }
 
     ctx.say(format!("\"{}\" added to queue.", title)).await?;
@@ -91,8 +94,7 @@ pub async fn play(
 /// Join a voice channel
 #[instrument]
 #[poise::command(prefix_command, slash_command)]
-pub async fn join(
-    ctx: Context<'_>) -> Result<(), Error> {
+pub async fn join(ctx: Context<'_>) -> Result<(), Error> {
     let (guild_id, channel_id) = {
         let Some(guild) = ctx.guild() else {
             ctx.say("This command is only supported in guilds.").await?;
@@ -198,10 +200,21 @@ pub async fn queue(ctx: Context<'_>) -> Result<(), Error> {
             .to_owned();
 
         let play_time_duration = handle.get_info().await.ok().unwrap().play_time;
-        let play_time = format!("{:0>2}:{:0>2}", (play_time_duration.as_secs() /60) % 60, play_time_duration.as_secs() % 60);
+        let play_time = format!(
+            "{:0>2}:{:0>2}",
+            (play_time_duration.as_secs() / 60) % 60,
+            play_time_duration.as_secs() % 60
+        );
 
         if Some(handle.uuid()) == current_uuid {
-            format!("{}. {} - {} (currently playing {}/{})", i + 1, name, url, play_time, track_length)
+            format!(
+                "{}. {} - {} (currently playing {}/{})",
+                i + 1,
+                name,
+                url,
+                play_time,
+                track_length
+            )
         } else {
             format!("{}. {} - {} - {}", i + 1, name, url, track_length)
         }
@@ -232,7 +245,6 @@ pub async fn skip(ctx: Context<'_>) -> Result<(), Error> {
 
     Ok(())
 }
-
 
 #[instrument]
 #[poise::command(prefix_command, slash_command)]
