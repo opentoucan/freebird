@@ -7,13 +7,16 @@
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/github",
-    [
-      "@semantic-release/git",
-      {
-          "assets": [
-              "Cargo.toml",
-              "Cargo.lock"
-          ]
+    ["@semantic-release/git", {
+        "assets": [
+            "Cargo.toml",
+            "Cargo.lock"
+        ]
+      }
+    ],
+    ["@codedependant/semantic-release-docker", {
+      "dockerImage": "freebird",
+      "dockerRegistry": "ghcr.io"
       }
     ]
   ]
