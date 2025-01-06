@@ -35,6 +35,6 @@ in pkgs.mkShell {
     npm install husky --save-dev
     npx husky init
     echo "npx --no -- commitlint --edit \$1" > .husky/commit-msg
-    echo "" > .husky/pre-commit
+    echo "cargo fmt" > .husky/pre-commit
   '';
 }
