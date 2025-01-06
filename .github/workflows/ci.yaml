@@ -121,8 +121,8 @@ jobs:
 
       # If it's a major or minor version change then cut a branch from the new tag
       - name: Branch from tag
-        if: ${{ steps.semantic-release.outputs.new_release_patch_version  }} == 0 &&
-        ${{ steps.semantic-release.outputs.new_release_published }} == true
+        if: ${{ (steps.semantic-release.outputs.new_release_patch_version) == 0 &&
+         (steps.semantic-release.outputs.new_release_published) == true }}
         run: |
           git config --global push.autoSetupRemote true
           git checkout -b ${{ needs.release.outputs.major }}.${{ needs.release.outputs.minor }}.x ${{ needs.release.outputs.git_tag }}
