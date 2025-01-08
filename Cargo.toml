@@ -19,11 +19,11 @@
     version = '1.42.0'
 
   [dependencies.tracing-subscriber]
-    features = ["env-filter", "std"]
+    features = ['env-filter', 'std']
     version = '0.3.19'
 
 [package]
   authors = ['sillock1']
   edition = '2021'
   name = 'freebird'
-  version = '0.7.0'
+  version = '0.7.1'
