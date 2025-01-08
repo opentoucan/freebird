@@ -1,6 +1,5 @@
 use serenity::futures::future::join_all;
 use songbird::{input::YoutubeDl, TrackEvent};
-
 use tracing::instrument;
 
 use crate::{
@@ -43,6 +42,8 @@ pub async fn play(
         return Ok(());
     };
 
+    ctx.defer().await?;
+
     // Some prepwork before gathering the data
     let do_search = !url.starts_with("http");
     let http_client = {
@@ -58,6 +59,9 @@ pub async fn play(
     } else {
         YoutubeDl::new(http_client, url.clone())
     };
+
+    tracing::info!("Pulling song information");
+
     let mut aux_multiple = src
         .search(Some(1))
         .await
@@ -66,16 +70,22 @@ pub async fn play(
     let aux = aux_multiple.swap_remove(0);
     let title = aux.title.unwrap_or_else(|| "Unknown".to_owned());
     let track_length = aux.duration.unwrap();
+
+    tracing::info!("Adding song to queue {}", title);
+
     // Add the song to the queue
     {
+        tracing::info!("Retrieving songbird manager");
         let songbird = get_songbird_manager(ctx).await;
 
+        tracing::info!("Acquiring the lock");
         let Some(driver_lock) = songbird.get(guild_id) else {
             ctx.say("Not in voice channel, can't play.").await?;
             return Ok(());
         };
         let mut driver = driver_lock.lock().await;
-        let handle = driver.enqueue(src.into()).await;
+        tracing::info!("Enqueuing the track");
+        let handle = driver.enqueue_input(src.into()).await;
         let mut typemap = handle.typemap().write().await;
         typemap.insert::<SongTitleKey>(title.clone());
         typemap.insert::<SongUrlKey>(url);

@@ -31,6 +31,7 @@ in pkgs.mkShell {
   LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
   shellHook = ''
     export DISCORD_TOKEN=""
+    export RUST_LOG="INFO"
     npm install @commitlint/cli @commitlint/config-conventional --save-dev
     npm install husky --save-dev
     npx husky init

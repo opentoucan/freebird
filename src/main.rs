@@ -13,6 +13,7 @@ mod commands;
 mod events;
 
 mod typekeys;
+use tracing_subscriber::{filter::EnvFilter, fmt, prelude::*};
 use typekeys::HttpKey;
 
 #[derive(Debug, Clone)]
@@ -57,6 +58,11 @@ async fn main() {
     let config_clone = config.clone();
     let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
 
+    tracing_subscriber::registry()
+        .with(fmt::layer())
+        .with(EnvFilter::from_default_env())
+        .init();
+
     let options = poise::FrameworkOptions {
         commands: vec![
             commands::help(),
@@ -79,10 +85,10 @@ async fn main() {
     let framework = poise::Framework::builder()
         .setup(move |ctx, ready, framework| {
             Box::pin(async move {
-                println!("Logged in as {}", ready.user.name);
+                tracing::info!("Logged in as {}", ready.user.name);
 
                 if cfg!(debug_assertions) {
-                    println!("Running with debug enabled");
+                    tracing::info!("Running with debug enabled");
                     poise::builtins::register_in_guild(
                         ctx,
                         &framework.options().commands,
@@ -90,7 +96,7 @@ async fn main() {
                     )
                     .await?;
                 } else {
-                    println!("Running in production");
+                    tracing::info!("Running in production");
                     poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                 }
 
