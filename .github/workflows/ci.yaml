@@ -121,7 +121,8 @@ jobs:
             @semantic-release/github@11.0.1
             @semantic-release/git@10.0.1
           semantic_version: 24.2.1
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
   docker-build:
     runs-on: ubuntu-latest
     needs: release
