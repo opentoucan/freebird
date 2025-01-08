@@ -13,12 +13,6 @@
             "Cargo.lock"
         ]
       }
-    ],
-    ["@codedependant/semantic-release-docker", {
-      "dockerImage": "freebird",
-      "dockerRegistry": "ghcr.io",
-      "dockerProject": "opentoucan"
-      }
     ]
   ]
 }
