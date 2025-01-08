@@ -163,11 +163,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      # If it's a major or minor version change then cut a branch from the new tag
-      - name: Branch from tag
-        if: ${{ needs.release.outputs.patch }} == 0
-        run: |
-          git config --global push.autoSetupRemote true
-          git checkout -b ${{ needs.release.outputs.major }}.${{ needs.release.outputs.minor }}.x ${{ needs.release.outputs.git_tag }}
-          git push
