@@ -16,7 +16,8 @@
     ],
     ["@codedependant/semantic-release-docker", {
       "dockerImage": "freebird",
-      "dockerRegistry": "ghcr.io"
+      "dockerRegistry": "ghcr.io",
+      "dockerProject": "opentoucan"
       }
     ]
   ]
