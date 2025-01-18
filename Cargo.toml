@@ -13,6 +13,10 @@
     features = ['builtin-queue']
     version = '0.4.6'
 
+  [dependencies.symphonia]
+    features = ['pcm', 'mp3', 'wav', 'isomp4', 'aac', 'alac']
+    version = '0.5.4'
+
   [dependencies.tokio]
     features = ['full']
     version = '1.42.0'
@@ -21,12 +25,8 @@
     features = ['env-filter', 'std']
     version = '0.3.19'
 
-  [dependencies.symphonia]
-    features = ['pcm','mp3','wav','isomp4','aac','alac']
-    version = '0.5.4'
-
 [package]
   authors = ['sillock1']
   edition = '2021'
   name = 'freebird'
-  version = '0.7.2'
+  version = '0.8.0'
