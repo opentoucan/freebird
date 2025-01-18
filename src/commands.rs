@@ -42,10 +42,12 @@ pub async fn play(
         return Ok(());
     };
 
-    ctx.defer().await?;
 
-    // Some prepwork before gathering the data
-    let do_search = !url.starts_with("http");
+    if !url.starts_with("http") {
+        ctx.say("Must provide a valid URL").await?;
+        return Ok(());
+    }
+
     let http_client = {
         let data = ctx.serenity_context().data.read().await;
         data.get::<HttpKey>()
@@ -53,50 +55,40 @@ pub async fn play(
             .expect("Guaranteed to exist in the typemap.")
     };
 
-    // Fetch data about the selected video
-    let mut src = if do_search {
-        YoutubeDl::new_search(http_client, url.clone())
-    } else {
-        YoutubeDl::new(http_client, url.clone())
-    };
+    let manager = get_songbird_manager(ctx).await;
 
-    tracing::info!("Pulling song information");
+    if let Some(handler_lock) = manager.get(guild_id) {
+        let mut handler = handler_lock.lock().await;
 
-    let mut aux_multiple = src
-        .search(Some(1))
-        .await
-        .expect("Failed to get info about song.");
-    if aux_multiple.len() == 0 {}
-    let aux = aux_multiple.swap_remove(0);
-    let title = aux.title.unwrap_or_else(|| "Unknown".to_owned());
-    let track_length = aux.duration.unwrap();
+        // Here, we use lazy restartable sources to make sure that we don't pay
+        // for decoding, playback on tracks which aren't actually live yet.
+        let src = YoutubeDl::new(http_client, url.clone());
 
-    tracing::info!("Adding song to queue {}", title);
-
-    // Add the song to the queue
-    {
-        tracing::info!("Retrieving songbird manager");
-        let songbird = get_songbird_manager(ctx).await;
-
-        tracing::info!("Acquiring the lock");
-        let Some(driver_lock) = songbird.get(guild_id) else {
-            ctx.say("Not in voice channel, can't play.").await?;
-            return Ok(());
-        };
-        let mut driver = driver_lock.lock().await;
-        tracing::info!("Enqueuing the track");
-        let handle = driver.enqueue_input(src.into()).await;
+        let handle = handler.enqueue_input(src.clone().into()).await;
         let mut typemap = handle.typemap().write().await;
-        typemap.insert::<SongTitleKey>(title.clone());
-        typemap.insert::<SongUrlKey>(url);
-        typemap.insert::<SongLengthKey>(format!(
-            "{:0>2}:{:0>2}",
-            (track_length.as_secs() / 60) % 60,
-            track_length.as_secs() % 60
-        ));
-    }
 
-    ctx.say(format!("\"{}\" added to queue.", title)).await?;
+        tracing::info!("Pulling song information");
+
+        let mut aux_multiple = src.clone()
+            .search(Some(1))
+            .await
+            .expect("Failed to get info about song.");
+        if aux_multiple.len() == 0 {}
+        let aux = aux_multiple.swap_remove(0);
+        let title = aux.title.unwrap_or_else(|| "Unknown".to_owned());
+        let track_length = aux.duration.unwrap();
+
+         typemap.insert::<SongTitleKey>(title.clone());
+         typemap.insert::<SongUrlKey>(url);
+         typemap.insert::<SongLengthKey>(format!(
+             "{:0>2}:{:0>2}",
+             (track_length.as_secs() / 60) % 60,
+             track_length.as_secs() % 60
+         ));
+
+    } else {
+        ctx.say("Not in a voice channel to play in").await?;
+    }
 
     Ok(())
 }
