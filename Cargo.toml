@@ -4,7 +4,6 @@
   reqwest = '0.11.23'
   serde = '1.0'
   serenity = '0.12.4'
-  symphonia = '0.5.4'
   toml = '0.8'
   tracing = '0.1.41'
   tracing-futures = '0.2.5'
@@ -21,6 +20,10 @@
   [dependencies.tracing-subscriber]
     features = ['env-filter', 'std']
     version = '0.3.19'
+
+  [dependencies.symphonia]
+    features = ['pcm','mp3','wav','isomp4','aac','alac']
+    version = '0.5.4'
 
 [package]
   authors = ['sillock1']

@@ -47,6 +47,8 @@ pub async fn play(
         return Ok(());
     }
 
+    ctx.defer().await?;
+
     let http_client = {
         let data = ctx.serenity_context().data.read().await;
         data.get::<HttpKey>()
@@ -59,13 +61,14 @@ pub async fn play(
     if let Some(handler_lock) = manager.get(guild_id) {
         let mut handler = handler_lock.lock().await;
 
-        // Here, we use lazy restartable sources to make sure that we don't pay
-        // for decoding, playback on tracks which aren't actually live yet.
+        tracing::info!("Starting YoutubeDL client");
+
         let src = YoutubeDl::new(http_client, url.clone());
+
+        tracing::info!("Enqueuing the url source");
 
         let handle = handler.enqueue_input(src.clone().into()).await;
         let mut typemap = handle.typemap().write().await;
-
         tracing::info!("Pulling song information");
 
         let mut aux_multiple = src
@@ -85,6 +88,7 @@ pub async fn play(
             (track_length.as_secs() / 60) % 60,
             track_length.as_secs() % 60
         ));
+        ctx.say(format!("Playing: {}", title)).await?;
     } else {
         ctx.say("Not in a voice channel to play in").await?;
     }
