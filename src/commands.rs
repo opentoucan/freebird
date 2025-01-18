@@ -42,7 +42,6 @@ pub async fn play(
         return Ok(());
     };
 
-
     if !url.starts_with("http") {
         ctx.say("Must provide a valid URL").await?;
         return Ok(());
@@ -69,7 +68,8 @@ pub async fn play(
 
         tracing::info!("Pulling song information");
 
-        let mut aux_multiple = src.clone()
+        let mut aux_multiple = src
+            .clone()
             .search(Some(1))
             .await
             .expect("Failed to get info about song.");
@@ -78,14 +78,13 @@ pub async fn play(
         let title = aux.title.unwrap_or_else(|| "Unknown".to_owned());
         let track_length = aux.duration.unwrap();
 
-         typemap.insert::<SongTitleKey>(title.clone());
-         typemap.insert::<SongUrlKey>(url);
-         typemap.insert::<SongLengthKey>(format!(
-             "{:0>2}:{:0>2}",
-             (track_length.as_secs() / 60) % 60,
-             track_length.as_secs() % 60
-         ));
-
+        typemap.insert::<SongTitleKey>(title.clone());
+        typemap.insert::<SongUrlKey>(url);
+        typemap.insert::<SongLengthKey>(format!(
+            "{:0>2}:{:0>2}",
+            (track_length.as_secs() / 60) % 60,
+            track_length.as_secs() % 60
+        ));
     } else {
         ctx.say("Not in a voice channel to play in").await?;
     }
