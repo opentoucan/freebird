@@ -74,7 +74,7 @@ async fn main() {
             commands::version(),
         ],
         prefix_options: poise::PrefixFrameworkOptions {
-            prefix: Some("=".to_owned()),
+            prefix: Some(config_clone.command_prefix.parse::<String>().unwrap().to_owned()),
             edit_tracker: None,
             ..Default::default()
         },

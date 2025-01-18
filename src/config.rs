@@ -7,7 +7,7 @@ pub type Config = Arc<MainConfig>;
 #[derive(Debug, Clone, Deserialize)]
 pub struct MainConfig {
     pub test_guild: String,
-    //pub error_webhook: Option<String>,
+    pub command_prefix: String,
 }
 
 pub fn load_config() -> Config {
